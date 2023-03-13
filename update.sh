@@ -1,5 +1,6 @@
 #!/bin/bash
 
+
 # Check if dependencies are installed and install if missing
 DEPENDENCIES=(wget tar gcc make zlib1g-dev)
 MISSING_DEPENDENCIES=()
