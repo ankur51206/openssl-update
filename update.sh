@@ -14,6 +14,14 @@ if [ "$(printf '%s\n' "$CURRENT_VERSION" "1.1.1t" | sort -V | head -n1)" != "1.1
     ./config --prefix=/usr/local/ssl --openssldir=/usr/local/ssl shared zlib
     make
     sudo make install
+
+    # Configure OpenSSL shared libraries
+    sudo sh -c 'echo "/usr/local/ssl/lib" > /etc/ld.so.conf.d/openssl.conf'
+    sudo ldconfig
+
+    # Configure OpenSSL binary
+    echo 'export PATH="/usr/local/ssl/bin:$PATH"' | sudo tee -a /etc/environment > /dev/null
+    source /etc/environment
     
     # Check if installation was successful
     if [ $? -eq 0 ]; then
