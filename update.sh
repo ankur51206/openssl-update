@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 # Check if dependencies are installed and install if missing
 DEPENDENCIES=(wget tar gcc make zlib1g-dev)
 MISSING_DEPENDENCIES=()
@@ -38,8 +37,16 @@ if [ "$(printf '%s\n' "$CURRENT_VERSION" "1.1.1t" | sort -V | head -n1)" != "1.1
     sudo sh -c 'echo "/usr/local/ssl/lib" > /etc/ld.so.conf.d/openssl-1.1.1t.conf'
     sudo ldconfig
 
-    # Configure OpenSSL binary
-    sudo update-alternatives --install /usr/bin/openssl openssl /usr/local/ssl/bin/openssl 1
+    # Remove existing OpenSSL symbolic links
+    sudo rm /usr/bin/openssl
+    sudo rm /usr/include/openssl
+
+    # Create symbolic links for OpenSSL binaries
+    sudo ln -s /usr/local/ssl/bin/openssl /usr/bin/openssl
+    sudo ln -s /usr/local/ssl/include/openssl /usr/include/openssl
+
+    # Update the shared library cache
+    sudo ldconfig
 
     # Check if installation was successful
     if [ "$(openssl version | awk '{print $2}')" == "1.1.1t" ]; then
@@ -48,13 +55,12 @@ if [ "$(printf '%s\n' "$CURRENT_VERSION" "1.1.1t" | sort -V | head -n1)" != "1.1
         echo "OpenSSL installation failed."
     fi
 
-    # Delete the zip/tar file. 
+    # Delete the zip/tar file.
     cd /tmp
     rm -rf openssl-1.1.1t openssl-1.1.1t.tar.gz
 else
     echo "OpenSSL version $CURRENT_VERSION is up-to-date."
 fi
-
 
 # Display the current OpenSSL version
 echo "Current OpenSSL version: $(openssl version | awk '{print $2}')"
